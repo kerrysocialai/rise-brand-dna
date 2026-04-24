@@ -1,20 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Brand DNA — Your Rise Team</title>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { background: #FAF8F6; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Brand DNA — Your Rise Team</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>*{box-sizing:border-box;margin:0;padding:0}body{background:#FAFAF8}</style>
 </head>
 <body>
-  <div id="root"></div>
-  <script type="text/babel" data-type="module">
-  </script>
+<div id="root"></div>
+<script type="text/babel">
+const {useState,useCallback}=React;
+const C={white:"#FFFFFF",offWhite:"#FAFAF8",snowWhite:"#F7F7F5",sage:"#8FAF8F",sageMid:"#B5CAB5",sageLight:"#E8F0E8",sagePale:"#F2F6F2",roseGold:"#B5846A",roseGoldLight:"#D4A898",roseGoldPale:"#F5EDE9",roseGoldDark:"#8C5F48",charcoal:"#2A2A2A",midGrey:"#6B6B6B",lightGrey:"#E0E0DC"};
+const STEPS=[{id:"offer",num:"01",label:"Offer Suite",tagline:"What you sell and what it delivers",icon:"◈"},{id:"positioning",num:"02",label:"Positioning",tagline:"What makes you the obvious choice",icon:"◎"},{id:"avatar",num:"03",label:"Ideal Client",tagline:"The exact person you're speaking to",icon:"◉"},{id:"buckets",num:"04",label:"Content Buckets",tagline:"Five themes that keep content focused",icon:"◆"},{id:"voice",num:"05",label:"Brand Voice",tagline:"How AI learns to sound like you",icon:"◇"}];
+const BUCKETS=["Authority Translation","Visible Without Performing","Positioning Clarity","Content That Converts","Identity After Corporate"];
+const KEY="rise_brand_dna";
+const save=d=>{try{localStorage.setItem(KEY,JSON.stringify(d))}catch{}};
+const load=()=>{try{const r=localStorage.getItem(KEY);return r?JSON.parse(r):null}catch{return null}};
+const blank={offer:{signature:"",additional:""},positioning:"",avatar:{who:"",struggles:"",desires:"",fears:""},buckets:["","","","",""],voice:{tone:"",avoid:"",story:"",testimonial:""}};
+function TA({value,onChange,rows=3,placeholder}){return <textarea value={value} onChange={e=>onChange(e.target.value)} rows={rows} placeholder={placeholder} style={{width:"100%",padding:"0.7rem 0.9rem",border:`1px solid ${C.lightGrey}`,borderRadius:8,fontSize:"0.8rem",background:C.offWhite,color:C.charcoal,resize:"vertical",lineHeight:1.6,fontFamily:"'Jost',sans-serif"}}/>}
+function Field({label,hint,children}){return <div style={{marginBottom:"1.25rem"}}><label style={{display:"block",fontFamily:"'Jost',sans-serif",fontSize:"0.7rem",fontWeight:500,color:"#2A2A2A",marginBottom:"0.3rem"}}>{label}</label>{hint&&<p style={{fontFamily:"'Jost',sans-serif",fontSize:"0.65rem",color:"#9A9A9A",marginBottom:"0.4rem",fontWeight:300}}>{hint}</p>}{children}</div>}
+function App(){
+const[step,setStep]=useState(0);
+const[saved,setSaved]=useState(()=>{const l=load();if(!l)return new Set();const s=new Set();if(l.offer?.signature)s.add(0);if(l.positioning)s.add(1);if(l.avatar?.who)s.add(2);if(l.buckets?.some(b=>b))s.add(3);if(l.voice?.tone)s.add(4);return s;});
+const[dna,setDna]=useState(()=>load()||blank);
+const[ok,setOk]=useState(null);
+const upd=useCallback((path,value)=>{setDna(prev=>{const next=JSON.parse(JSON.stringify(prev));const keys=path.split(".");let obj=next;for(let i=0;i<keys.length-1;i++)obj=obj[keys[i]];obj[keys[keys.length-1]]=value;return next;});},[]);
+const doSave=idx=>{save(dna);setSaved(prev=>new Set([...prev,idx]));setOk(idx);setTimeout(()=>setOk(null),2000);if(idx<STEPS.length-1)setTimeout(()=>setStep(idx+1),400);};
+const pct=Math.round((saved.size/STEPS.length)*100);
+return(
+<div style={{minHeight:"100vh",background:C.offWhite,fontFamily:"'Cormorant Garamond',Georgia,serif"}}>
+<style>{`textarea:focus,input:focus{outline:none;border-color:${C.roseGold}!important}`}</style>
+<div style={{background:C.white,borderBottom:`1px solid ${C.lightGrey}`,padding:"1.75rem 1.5rem 1.25rem"}}>
+<div style={{maxWidth:640,margin:"0 auto"}}>
+<p style={{fontFamily:"'Jost',sans-serif",fontSize:"0.6rem",letterSpacing:"0.25em",textTransform:"uppercase",color:C.sage,marginBottom:"0.4rem"}}>YOUR RISE TEAM</p>
+<div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",flexWrap:"wrap",gap:"0.5rem"}}>
+<div><h1 style={{fontSize:"2rem",fontWeight:300,color:C.charcoal,lineHeight:1.1}}>Brand <em style={{fontStyle:"italic",color:C.roseGold}}>DNA</em></h1>
+<p style={{fontFamily:"'Jost',sans-serif",fontSize:"0.75rem",color:C.midGrey,marginTop:"0.3rem",fontWeight:300}}>The foundation that powers every piece of content you create.</p></div>
+<div style={{textAlign:"right"}}><div style={{fontFamily:"'Jost',sans-serif",fontSize:"0.65rem",color:C.midGrey,marginBottom:"0.2rem"}}>{pct}% complete</div>
+<div style={{width:100,height:3,background:C.lightGrey,borderRadius:2,overflow:"hidden"}}><div style={{width:`${pct}%`,height:"100%",background:`linear-gradient(90deg,${C.sageMid},${C.roseGold})`,borderRadius:2,transition:"width 0.5s ease"}}/></div></div>
+</div></div></div>
+<div style={{background:C.white,borderBottom:`1px solid ${C.lightGrey}`,overflowX:"auto"}}>
+<div style={{display:"flex",maxWidth:640,margin:"0 auto"}}>
+{STEPS.map((s,i)=>(
+<button key={s.id} onClick={()=>setStep(i)} style={{flex:"0 0 auto",display:"flex",alignItems:"center",gap:"0.5rem",padding:"0.85rem 1rem",background:"none",border:"none",borderBottom:step===i?`2px solid ${C.roseGold}`:"2px solid transparent",cursor:"pointer",whiteSpace:"nowrap"}}>
+<div style={{width:22,height:22,borderRadius:"50%",display:"flex",alignItems:"center",justifyContent:"center",background:saved.has(i)?C.sage:step===i?C.roseGoldPale:C.snowWhite,border:`1px solid ${saved.has(i)?C.sage:step===i?C.roseGold:C.lightGrey}`,fontSize:"0.6rem",fontFamily:"'Jost',sans-serif",fontWeight:500,color:saved.has(i)?C.white:step===i?C.roseGold:C.midGrey}}>{saved.has(i)?"✓":s.num}</div>
+<span style={{fontFamily:"'Jost',sans-serif",fontSize:"0.7rem",fontWeight:step===i?500:300,color:step===i?C.charcoal:C.midGrey}}>{s.label}</span>
+</button>))}
+</div></div>
+<div style={{maxWidth:640,margin:"0 auto",padding:"2rem 1.5rem"}}>
+<div style={{background:C.white,borderRadius:16,border:`1px solid ${C.lightGrey}`,overflow:"hidden",boxShadow:"0 2px 20px rgba(0,0,0,0.04)"}}>
+<div style={{padding:"1.75rem 2rem 1.25rem",borderBottom:`1px solid ${C.lightGrey}`}}>
+<span style={{fontFamily:"'Jost',sans-serif",fontSize:"0.6rem",letterSpacing:"0.2em",textTransform:"uppercase",color:C.roseGold,fontWeight:500}}>Section {STEPS[step].num}</span>
+{saved.has(step)&&<span style={{marginLeft:"0.5rem",fontFamily:"'Jost',sans-serif",fontSize:"0.6rem",color:C.sage,background:C.sageLight,padding:"0.15rem 0.5rem",borderRadius:20,fontWeight:500}}>SAVED</span>}
+<h2 style={{fontSize:"1.6rem",fontWeight:300,color:C.charcoal,marginTop:"0.4rem"}}>{STEPS[step].label}</h2>
+<p style={{fontFamily:"'Jost',sans-serif",fontSize:"0.75rem",color:C.midGrey,marginTop:"0.25rem",fontWeight:300}}>{STEPS[step].tagline}</p>
+</div>
+<div style={{padding:"1.75rem 2rem 2rem"}}>
+{step===0&&<><Field label="Your Signature Offer" hint="Your primary offer — the AI will reference this across all tools."><TA value={dna.offer.signature} onChange={v=>upd("offer.signature",v)} rows={4} placeholder="e.g. A 12-week 1:1 coaching programme helping professional women build a visible personal brand..."/></Field><Field label="Additional Offers" hint="Optional — courses, workshops, lower-ticket programmes."><TA value={dna.offer.additional} onChange={v=>upd("offer.additional",v)} rows={3} placeholder="e.g. The Visibility Vault — a self-study course..."/></Field></>}
+{step===1&&<><Field label="Your Positioning Statement" hint="What makes your offer the obvious choice. Used across every AI tool."><TA value={dna.positioning} onChange={v=>upd("positioning",v)} rows={6} placeholder="I help [who] who [struggle] to [outcome] without [objection]..."/></Field><div style={{background:C.roseGoldPale,borderRadius:10,padding:"0.9rem 1rem"}}><p style={{fontFamily:"'Jost',sans-serif",fontSize:"0.68rem",color:C.roseGoldDark,lineHeight:1.6}}><strong>Tip:</strong> Be specific about WHO, name their exact frustration, and promise a real outcome they would search for at 11pm.</p></div></>}
+{step===2&&<><Field label="Who are they?" hint="Age, background, life stage."><TA value={dna.avatar.who} onChange={v=>upd("avatar.who",v)} rows={2} placeholder="e.g. Women in their 40s-50s, former corporate professionals..."/></Field><Field label="What are they struggling with right now?"><TA value={dna.avatar.struggles} onChange={v=>upd("avatar.struggles",v)} rows={3} placeholder="e.g. Posting consistently but getting zero engagement..."/></Field><Field label="What do they deeply desire?"><TA value={dna.avatar.desires} onChange={v=>upd("avatar.desires",v)} rows={3} placeholder="e.g. To be seen as an authority without having to shout about it..."/></Field><Field label="What fears or objections hold them back?"><TA value={dna.avatar.fears} onChange={v=>upd("avatar.fears",v)} rows={2} placeholder="e.g. Worried about being judged by people from their old career..."/></Field></>}
+{step===3&&<><p style={{fontFamily:"'Jost',sans-serif",fontSize:"0.72rem",color:C.midGrey,marginBottom:"0.75rem",fontWeight:300}}>Your five content themes. Keep every piece of content focused.</p><div style={{display:"flex",flexWrap:"wrap",gap:"0.4rem",marginBottom:"1.25rem"}}>{BUCKETS.map(s=>{const a=dna.buckets.includes(s);return(<button key={s} onClick={()=>{if(a){upd("buckets",dna.buckets.map(b=>b===s?"":b));}else{const idx=dna.buckets.findIndex(b=>b==="");if(idx!==-1){const nb=[...dna.buckets];nb[idx]=s;upd("buckets",nb);}}}} style={{padding:"0.35rem 0.8rem",borderRadius:20,border:`1px solid ${a?C.sage:C.lightGrey}`,background:a?C.sageLight:C.white,color:a?C.sage:C.midGrey,fontFamily:"'Jost',sans-serif",fontSize:"0.65rem",cursor:"pointer"}}>{s}</button>);})}</div>{dna.buckets.map((b,i)=><div key={i} style={{display:"flex",gap:"0.6rem",alignItems:"center",marginBottom:"0.6rem"}}><div style={{width:26,height:26,borderRadius:"50%",background:b?C.roseGoldPale:C.snowWhite,display:"flex",alignItems:"center",justifyContent:"center",fontSize:"0.6rem",fontFamily:"'Jost',sans-serif",color:b?C.roseGold:C.midGrey,fontWeight:500,flexShrink:0}}>0{i+1}</div><input value={b} onChange={e=>{const nb=[...dna.buckets];nb[i]=e.target.value;upd("buckets",nb);}} placeholder={`Content bucket ${i+1}...`} style={{flex:1,padding:"0.6rem 0.85rem",border:`1px solid ${C.lightGrey}`,borderRadius:8,fontFamily:"'Jost',sans-serif",fontSize:"0.78rem",background:C.offWhite,color:C.charcoal}}/></div>)}</>}
+{step===4&&<><Field label="Your tone and energy" hint="Describe how you come across — the AI needs to understand the feel."><TA value={dna.voice.tone} onChange={v=>upd("voice.tone",v)} rows={3} placeholder="e.g. Warm and direct. I say it as it is but I am never harsh..."/></Field><Field label="Words or phrases to AVOID" hint="This is just as important as what to include."><TA value={dna.voice.avoid} onChange={v=>upd("voice.avoid",v)} rows={2} placeholder="e.g. No dashes, use ellipses instead. No hustle. No girlie boss..."/></Field><Field label="Your founder story" hint="Why you built this. What makes content feel human not templated."><TA value={dna.voice.story} onChange={v=>upd("voice.story",v)} rows={4} placeholder="e.g. I spent 18 months posting into silence before I worked out..."/></Field><Field label="A client result you are proud of"><TA value={dna.voice.testimonial} onChange={v=>upd("voice.testimonial",v)} rows={3} placeholder="e.g. Within three weeks she had her first genuine DM enquiry..."/></Field></>}
+<div style={{display:"flex",gap:"0.75rem",marginTop:"2rem",alignItems:"center"}}>
+{step>0&&<button onClick={()=>setStep(step-1)} style={{fontFamily:"'Jost',sans-serif",fontSize:"0.72rem",color:C.midGrey,background:"none",border:`1px solid ${C.lightGrey}`,borderRadius:8,padding:"0.65rem 1.1rem",cursor:"pointer"}}>← Back</button>}
+<button onClick={()=>doSave(step)} style={{fontFamily:"'Jost',sans-serif",fontSize:"0.72rem",fontWeight:500,background:C.roseGold,color:C.white,border:"none",borderRadius:8,padding:"0.65rem 1.5rem",cursor:"pointer",letterSpacing:"0.08em",textTransform:"uppercase"}}>
+{ok===step?"✓ Saved":step===STEPS.length-1?"Save Brand DNA":"Save and Continue"}
+</button>
+</div>
+</div></div>
+{saved.size===STEPS.length&&<div style={{marginTop:"1.5rem",background:C.white,borderRadius:16,border:`1px solid ${C.sageMid}`,padding:"1.5rem 2rem"}}><p style={{fontFamily:"'Jost',sans-serif",fontSize:"0.6rem",letterSpacing:"0.2em",textTransform:"uppercase",color:C.sage,marginBottom:"0.5rem"}}>Your Brand DNA is complete</p><h3 style={{fontSize:"1.2rem",fontWeight:300,color:C.charcoal,marginBottom:"0.5rem"}}>Ready to generate content ✦</h3><p style={{fontFamily:"'Jost',sans-serif",fontSize:"0.75rem",color:C.midGrey,fontWeight:300,lineHeight:1.6}}>Head to the Content Room to start generating captions, Reel scripts and carousel copy that sounds like you.</p></div>}
+</div></div>);}
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
 </body>
 </html>
